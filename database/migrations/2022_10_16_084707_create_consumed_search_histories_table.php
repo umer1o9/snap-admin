@@ -18,6 +18,7 @@ class CreateConsumedSearchHistoriesTable extends Migration
             $table->integer('user_id');
             $table->integer('allowed_search_id'); //Table allowed Searches
             $table->integer('widget_id'); //Special Table for Widgets
+            $table->string('widget_code'); //Special Table for Widgets
             $table->integer('pending_searches'); //Count of All pending Searches related current Widget
             $table->timestamps();
         });

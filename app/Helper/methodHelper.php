@@ -103,6 +103,7 @@ if (! function_exists('text_moderation')){
             $consumed_searches->widget_id = $widget->id;
             $consumed_searches->allowed_search_id = $allowed_searches->allowed_search_id;
             $consumed_searches->pending_searches = $allowed_searches->pending;
+            $consumed_searches->widget_code = $widget_code;
             $consumed_searches->save();
         }
     }

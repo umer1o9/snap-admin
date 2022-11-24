@@ -4,6 +4,7 @@ namespace App\Http\Controllers\ApiController;
 
 use App\Http\Controllers\Controller;
 use App\Models\ApiModel\AllowedSearch;
+use App\Models\ApiModel\ConsumedSearchHistory;
 use App\Models\ApiModel\LoginHistory;
 use App\Models\ApiModel\Plan;
 use App\Models\ApiModel\Sales;
@@ -123,14 +124,43 @@ class CustomerController extends Controller
     function get_user_detail(){
         $user = Auth::user();
         $response = ['status' => true, 'code' => 402, 'message' => '', 'data' => []];
-        $user_detail = User::with(['allowed_searches', 'sales', 'consumed_searches'])->find($user->id);
-//        $user_detail = User::with(['allowed_searches' => function($query){
-//            $query->where( );
-//        }, 'sales', 'consumed_searches'])->find($user->id);
+        $user_detail = User::with(['allowed_searches'])->find($user->id);
+
+        $user_detail['get_section'] = 0;
+        $user_detail['get_title'] = 0;
+        $user_detail['expend_blogpost'] = 0;
+        $user_detail['video_script'] = 0;
+        $user_detail['linkedin_post'] = 0;
+        $user_detail['sales_copies'] = 0;
+        $user_detail['improve_headline'] = 0;
+        $user_detail['suggest_headline'] = 0;
+        $user_detail['brain_stormer'] = 0;
+        $user_detail['action_item'] = 0;
+        $user_detail['professional_talk'] = 0;
+
+        foreach ($user_detail->allowed_searches as $allowed_search){
+            $user_detail['get_section'] += $allowed_search->get_section;
+            $user_detail['get_title'] += $allowed_search->get_title;
+            $user_detail['expend_blogpost'] += $allowed_search->expend_blogpost;
+            $user_detail['video_script'] += $allowed_search->video_script;
+            $user_detail['linkedin_post'] += $allowed_search->linkedin_post;
+            $user_detail['sales_copies'] += $allowed_search->sales_copies;
+            $user_detail['improve_headline'] += $allowed_search->improve_headline;
+            $user_detail['brain_stormer'] += $allowed_search->brain_stormer;
+            $user_detail['action_item'] += $allowed_search->action_item;
+            $user_detail['easy_to_read'] += $allowed_search->easy_to_read;
+            $user_detail['professional_talk'] += $allowed_search->professional_talk;
+        }
+        $consumed_searches = ConsumedSearchHistory::select('widget_code', DB::raw('count(*) as total'))->where('user_id', $user->id)->groupBy('widget_code')->get();
+        $user_detail['consumed_searches'] = $consumed_searches;
         if ($user_detail){
             $response = ['status' => false, 'code' => 200, 'message' => '', 'data' => ['user' => $user_detail]];
         }
         return response()->json($response);
-
     }
 }
+//, SUM(allowed_searches.get_title) as get_title, SUM(allowed_searches.expend_blogpost) as co_write, SUM(allowed_searches.video_script) as video_script, SUM(allowed_searches.linkedin_post) as linkedin_post, SUM(allowed_searches.sales_copies) as sales_copies, SUM(allowed_searches.sales_copies) as sales_copies, SUM(allowed_searches.suggest_headline) as suggest_headline, SUM(allowed_searches.brain_stormer) as brain_stormer, SUM(allowed_searches.action_item) as action_item, SUM(allowed_searches.easy_to_read) as easy_to_read, SUM(allowed_searches.professional_talk) as professional_talk"
+
+//'consumed_searches'=> function($query, $user){
+//    $query->select(DB::raw('count(*) as total')->groupBy('widget_id')->where('user_id', $user->id));
+//}
