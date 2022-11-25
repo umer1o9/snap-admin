@@ -24,7 +24,7 @@ if (! function_exists('text_moderation')){
         $headers = [
             'accept' => 'application/json',
             'Content-Type' => 'application/json',
-            'Authorization' => 'Bearer '.config('constants.open_api_auth'),
+            'Authorization' => 'Bearer '.env('API_TOKEN' ),
         ];
 
         $moderation_response = $client->request('POST', $url, [
@@ -63,7 +63,7 @@ if (! function_exists('text_moderation')){
             $url =  config('constants.open_api_base_url')."/engines/text-davinci-002/completions";
             $headers = [
                 'Content-Type' => 'application/json',
-                'Authorization' => 'Bearer '.config('constants.open_api_auth'),
+                'Authorization' => 'Bearer '.env('API_TOKEN' ),
             ];
 
 //            $data['temperature'] = null;
