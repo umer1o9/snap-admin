@@ -69,12 +69,13 @@ class CustomerController extends Controller
     {
 
         $validated = $request->validate([
-            'first_name' => ['required', 'string', 'max:255'],
-            'last_name' => ['required', 'string', 'max:255'],
+//            'first_name' => ['required', 'string', 'max:255'],
+            //'last_name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'phone' => ['required'],
-            'i_want_for' => ['required'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+//            'phone' => ['required'],
+//            'i_want_for' => ['required'],
+            'password' => ['required', 'string', 'min:8'], //, 'confirmed'
         ]);
         DB::beginTransaction();
         try {
@@ -82,14 +83,14 @@ class CustomerController extends Controller
 
             if (!$user){
                 $user = new User();
-                $user->first_name = $request->first_name;
-                $user->last_name = $request->last_name;
+                $user->first_name = $request->name;
+                $user->last_name = $request->name;
                 $user->email = $request->email;
-                $user->phone = $request->phone;
-                $user->dob = $request->dob;
-                $user->cnic = $request->cnic;
-                $user->for = $request->i_want_for;
-                $user->country_id = $request->country;
+//                $user->phone = $request->phone;
+//                $user->dob = $request->dob;
+//                $user->cnic = $request->cnic;
+//                $user->for = $request->i_want_for;
+//                $user->country_id = $request->country;
                 $user->password = Hash::make($request->password);
                 $user->save();
             }
@@ -131,7 +132,7 @@ class CustomerController extends Controller
         $user_detail['expend_blogpost'] = 0;
         $user_detail['video_script'] = 0;
         $user_detail['linkedin_post'] = 0;
-        $user_detail['sales_copies'] = 0;
+        $user_detail['sales_copy'] = 0;
         $user_detail['improve_headline'] = 0;
         $user_detail['suggest_headline'] = 0;
         $user_detail['brain_stormer'] = 0;
@@ -144,7 +145,7 @@ class CustomerController extends Controller
             $user_detail['expend_blogpost'] += $allowed_search->expend_blogpost;
             $user_detail['video_script'] += $allowed_search->video_script;
             $user_detail['linkedin_post'] += $allowed_search->linkedin_post;
-            $user_detail['sales_copies'] += $allowed_search->sales_copies;
+            $user_detail['sales_copy'] += $allowed_search->sales_copy;
             $user_detail['improve_headline'] += $allowed_search->improve_headline;
             $user_detail['brain_stormer'] += $allowed_search->brain_stormer;
             $user_detail['action_item'] += $allowed_search->action_item;
@@ -158,7 +159,45 @@ class CustomerController extends Controller
         }
         return response()->json($response);
     }
+
+    function update_profile(Request $request)
+    {
+        $user = Auth::user();
+        $user->first_name = $request->name;
+        $user->last_name = $request->name;
+        $user->phone = $request->phone;
+        $user->dob = $request->dob;
+        $user->cnic = $request->cnic;
+        $user->profession = $request->profession;
+        if ($user->save()){
+            $response = ['status' => true, 'code' => 200, 'message' => 'Profile update successfully', 'data' => $user];
+        }else{
+            $response = ['status' => false, 'code' => 402, 'message' => 'Profile update error', 'data' => []];
+        }
+        return response()->json($response);
+    }
+
+    function update_password(Request $request)
+    {
+        $validated = $request->validate([
+            'password' => ['required', 'string', 'min:8'], //, 'confirmed'
+        ]);
+
+        $user = Auth::user();
+        if ($request->password != $request->confirm_password){
+            return response()->json(['status' => false, 'code' => 402, 'message' => 'Password and Confirm Password not match', 'data' => []]);
+        }
+        $user->password = Hash::make($request->password);
+        if ($user->save()){
+            $response = ['status' => true, 'code' => 200, 'message' => 'Password update successfully', 'data' => $user];
+        }else{
+            $response = ['status' => false, 'code' => 402, 'message' => 'Password update error', 'data' => []];
+        }
+        return response()->json($response);
+    }
 }
+
+
 //, SUM(allowed_searches.get_title) as get_title, SUM(allowed_searches.expend_blogpost) as co_write, SUM(allowed_searches.video_script) as video_script, SUM(allowed_searches.linkedin_post) as linkedin_post, SUM(allowed_searches.sales_copies) as sales_copies, SUM(allowed_searches.sales_copies) as sales_copies, SUM(allowed_searches.suggest_headline) as suggest_headline, SUM(allowed_searches.brain_stormer) as brain_stormer, SUM(allowed_searches.action_item) as action_item, SUM(allowed_searches.easy_to_read) as easy_to_read, SUM(allowed_searches.professional_talk) as professional_talk"
 
 //'consumed_searches'=> function($query, $user){

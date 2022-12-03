@@ -26,6 +26,8 @@ Route::post('/user/register', 'ApiController\CustomerController@register');
 
 Route::group(['prefix'=>'user','as'=>'workflow', 'middleware' => ['auth:sanctum'], 'namespace' => 'ApiController' ], function(){
     Route::get('/', ['as' => '/', 'uses' => 'CustomerController@get_user_detail']);
+    Route::post('/', ['as' => '', 'uses' => 'CustomerController@update_profile']);
+    Route::post('/update_password', ['as' => '/update_password', 'uses' => 'CustomerController@update_password']);
 });
 
 Route::group(['prefix'=>'workflow','as'=>'workflow', 'middleware' => ['auth:sanctum'], 'namespace' => 'ApiController' ], function(){
@@ -33,9 +35,10 @@ Route::group(['prefix'=>'workflow','as'=>'workflow', 'middleware' => ['auth:sanc
     Route::post('/get_title', ['as' => 'get_title', 'uses' => 'GetTitleController@get_title']);
 });
 
-Route::group(['prefix'=>'widget','as'=>'widget', 'middleware' => ['auth:sanctum'], 'namespace' => 'ApiController' ], function(){
+Route::group(['prefix'=>'widget','as'=>'widget', 'namespace' => 'ApiController' ], function(){
     Route::get('/', ['as' => '/', 'uses' => 'WidgetController@index']);
     Route::get('/results', ['as' => '/results', 'uses' => 'WidgetController@results']);
+    Route::get('/get_categories', ['as' => '/get_categories', 'uses' => 'WidgetController@get_categories']);
 
     Route::post('/sales_copy', ['as' => 'sales_copy', 'uses' => 'SalesCopyController@sales_copy']);
     Route::post('/co_write', ['as' => '/co_write', 'uses' => 'CoWriteController@co_writing']);

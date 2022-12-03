@@ -92,6 +92,7 @@ class CoWriteController extends Controller
             "temperature"=> $creativity['temperature'],
             "max_tokens"=> 500,
             "top_p"=> 1,
+            "stop"=> " \nEND",
             "logprobs"=> 5,
             "frequency_penalty"=> $creativity['frequency_penalty'],
             "presence_penalty"=> $creativity['presence_penalty'],

@@ -24,7 +24,7 @@ class CreateAllowedSearchesTable extends Migration
             $table->integer('expend_blogpost')->default(15);
             $table->integer('video_script')->default(15);
             $table->integer('linkedin_post')->default(15);
-            $table->integer('sales_copies')->default(15);
+            $table->integer('sales_copy')->default(15);
             $table->integer('improve_headline')->default(15);
             $table->integer('suggest_headline')->default(15);
             $table->integer('brain_stormer')->default(15);

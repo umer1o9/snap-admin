@@ -15,6 +15,8 @@ class CreateWidgetsTable extends Migration
     {
         Schema::create('widgets', function (Blueprint $table) {
             $table->id();
+            $table->string('category_code')->nullable();
+            $table->string('category_id')->nullable();
             $table->string('name');
             $table->string('code')->nullable();
             $table->string('Label');

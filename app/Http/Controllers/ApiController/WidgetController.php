@@ -20,10 +20,15 @@ class WidgetController extends Controller
     public function index(Request $request){
 
         $code = $request->input('code');
+        $category = $request->input('category');
         if ($code){
             $widgets = Widget::where('code', $code)->get();
         }else{
-            $widgets = Widget::where('is_active', 1)->get();
+            if (!$category){
+                $widgets = Widget::where('is_active', 1)->get();
+            }else{
+                $widgets = Widget::where('category_code', $category)->where('is_active', 1)->get();
+            }
         }
 
         return response()->json(['code' => 200, 'status' => true, 'message' => 'Success', 'data' =>  ['widgets' => $widgets]]);
@@ -31,6 +36,10 @@ class WidgetController extends Controller
     //
     public function results(Request $request){
         $user = Auth::user();
+        if (!$user){
+            response()->json(['code' => 402, 'status' => true, 'message' => 'Please Login', 'data' => []]);
+
+        }
         $code = $request->input('code');
         $query = null;
         if ($code == 'get_title'){
@@ -52,7 +61,7 @@ class WidgetController extends Controller
         if ($query == null){
             response()->json(['code' => 402, 'status' => true, 'message' => 'Please provide a valid Code', 'data' => []]);
         }
-
+        dd(1);
         $result = $query->where('valid', 1)->get();
 
         if ($code == 'expend_blogpost'){
@@ -82,5 +91,14 @@ class WidgetController extends Controller
 //        dd($current_co_write->request);
 //        dd(unserialize($current_co_write->request));
         return ['response' => $current_co_write->response, 'child_section_to_expend' => $current_co_write->section_to_expend ];
+    }
+    public function get_categories(){
+        $widgets = Widget::select('category_code')->distinct()->get();
+        $result = [];
+        foreach ($widgets as $widget){
+            $result[] = $widget->category_code;
+        }
+        return response()->json(['code' => 200, 'status' => true, 'message' => 'Success', 'data' => ['categories' => $result]]);
+
     }
 }
