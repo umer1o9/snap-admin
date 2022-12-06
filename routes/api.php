@@ -35,7 +35,8 @@ Route::group(['prefix'=>'workflow','as'=>'workflow', 'middleware' => ['auth:sanc
     Route::post('/get_title', ['as' => 'get_title', 'uses' => 'GetTitleController@get_title']);
 });
 
-Route::group(['prefix'=>'widget','as'=>'widget', 'namespace' => 'ApiController' ], function(){
+
+Route::group(['prefix'=>'widget', 'middleware' => ['auth:sanctum'], 'as'=>'widget', 'namespace' => 'ApiController' ], function(){
     Route::get('/', ['as' => '/', 'uses' => 'WidgetController@index']);
     Route::get('/results', ['as' => '/results', 'uses' => 'WidgetController@results']);
     Route::get('/get_categories', ['as' => '/get_categories', 'uses' => 'WidgetController@get_categories']);
@@ -44,9 +45,14 @@ Route::group(['prefix'=>'widget','as'=>'widget', 'namespace' => 'ApiController' 
     Route::post('/co_write', ['as' => '/co_write', 'uses' => 'CoWriteController@co_writing']);
     Route::post('/linkedin_post', ['as' => '/linkedin_post', 'uses' => 'LinkedinPostController@index']);
     Route::post('/professional_talk', ['as' => '/professional_talk', 'uses' => 'professionalTalkController@index']);
-    Route::post('/video_script ', ['as' => '/video_script ', 'uses' => 'VideoScriptController@index']);
+    Route::post('/video_script', ['as' => '/video_script ', 'uses' => 'VideoScriptController@index']);
 
+   //Voting
+    Route::post('/vote', ['as' => '/vote', 'uses' => 'WidgetController@vote_for_widget']);
 });
+//Payment Gateway
+    Route::get('/payment_gateways', 'ApiController\PaymentMethodController@index');
+
 //Route::get('widget', ['as' => 'widget', 'uses' => 'WidgetController@index']);
 //Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //    Route::post('/workflow/get_section', ['as' => 'get_section', 'uses' => 'GetSectionController@index']);

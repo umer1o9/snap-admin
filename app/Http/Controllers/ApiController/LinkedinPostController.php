@@ -13,10 +13,12 @@ class LinkedinPostController extends Controller
 {
     private $widget_code = 'linkedin_post';
 
+
     //
     public function index(Request $request){
         $response = ['code' => 422 , 'status' => false ,'message' => 'Server Error', 'description' => 'Some error please contact Admin or check your input.', 'data' => []];
         $user = Auth::user();
+
         $linkedin_post = new LinkedinPost();
         $linkedin_post->request = serialize($request->toArray());
         $linkedin_post->user_id = $user->id;

@@ -40,7 +40,6 @@ class CustomerController extends Controller
     }
     function login($request)
     {
-
         $response = ['code' => 402, 'status' => false, 'message' => '', 'data' => []];
         $credentials = ['email' => $request['email'], 'password' => $request['password']];
 

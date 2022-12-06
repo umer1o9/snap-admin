@@ -11,6 +11,7 @@ use App\Models\ApiModel\SalesCopy;
 use App\Models\ApiModel\VideoScript;
 use App\Models\ApiModel\Widget;
 use App\Models\GetSection;
+use App\Models\ApiModel\WidgetsVote;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -21,16 +22,22 @@ class WidgetController extends Controller
 
         $code = $request->input('code');
         $category = $request->input('category');
+
+        $allow_voting = $request->input('allow_voting');
+        if ($allow_voting){
+            $allow_voting = 1;
+        }else{
+            $allow_voting = 0;
+        }
         if ($code){
             $widgets = Widget::where('code', $code)->get();
         }else{
             if (!$category){
-                $widgets = Widget::where('is_active', 1)->get();
+                $widgets = Widget::with(['votes'])->where('is_active', 1)->where('allow_voting', $allow_voting)->get();
             }else{
-                $widgets = Widget::where('category_code', $category)->where('is_active', 1)->get();
+                $widgets = Widget::with(['votes'])->where('category_code', $category)->where('is_active', 1)->where('allow_voting', 0)->get();
             }
         }
-
         return response()->json(['code' => 200, 'status' => true, 'message' => 'Success', 'data' =>  ['widgets' => $widgets]]);
     }
     //
@@ -61,7 +68,6 @@ class WidgetController extends Controller
         if ($query == null){
             response()->json(['code' => 402, 'status' => true, 'message' => 'Please provide a valid Code', 'data' => []]);
         }
-        dd(1);
         $result = $query->where('valid', 1)->get();
 
         if ($code == 'expend_blogpost'){
@@ -100,5 +106,14 @@ class WidgetController extends Controller
         }
         return response()->json(['code' => 200, 'status' => true, 'message' => 'Success', 'data' => ['categories' => $result]]);
 
+    }
+    public function vote_for_widget(Request $request){
+        $user = Auth::user();
+        $widget_id = $request->widget_id;
+        $widgets_votes = new WidgetsVote();
+        $widgets_votes->user_id = $user->id;
+        $widgets_votes->widget_id = $widget_id;
+        $widgets_votes->save();
+        return response()->json(['code' => 200, 'status' => true, 'message' => 'Vote submitted Successfully', 'data' =>  []]);
     }
 }
