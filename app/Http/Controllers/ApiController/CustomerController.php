@@ -125,6 +125,17 @@ class CustomerController extends Controller
         $user = Auth::user();
         $response = ['status' => true, 'code' => 402, 'message' => '', 'data' => []];
         $user_detail = User::with(['allowed_searches'])->find($user->id);
+//        $plan = Plan::select(DB::raw("COUNT(*) as no_of_allowed_searches"))->where(['user_id' => $user->id, 'status' => 1])->get();
+//        dd($plan);
+        $sales = Sales::with(['plans', 'allowed_searches'])->where('user_id', $user->id)->get();
+        $no_of_searches = 0;
+        foreach ($sales as $sale){
+            if ($sale->plans){
+                $no_of_searches += $sale->plans->no_of_allowed_searches;
+            }
+        }
+        $user_detail['sales'] = $sales;
+        $user_detail['no_of_allowed_searches'] = $no_of_searches;
 
         $user_detail['get_section'] = 0;
         $user_detail['get_title'] = 0;

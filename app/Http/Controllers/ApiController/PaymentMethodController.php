@@ -101,4 +101,11 @@ class PaymentMethodController extends Controller
         $allowed_searches->save();
         return $allowed_searches;
     }
+
+    public function sales(){
+        $user = Auth::user();
+        $sales = Sales::with('plans')->where('user_id', $user->id)->get();
+        return response()->json(['code' => 200, 'status' => true, 'message' => 'Success', 'data' => ['sales' => $sales]]);
+
+    }
 }
