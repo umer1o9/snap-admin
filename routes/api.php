@@ -52,6 +52,9 @@ Route::group(['prefix'=>'widget', 'middleware' => ['auth:sanctum'], 'as'=>'widge
 });
 //Payment Gateway
     Route::get('/payment_gateways', 'ApiController\PaymentMethodController@index');
+    Route::group(['prefix'=>'', 'middleware' => ['auth:sanctum'], 'as'=>'widget', 'namespace' => 'ApiController' ], function(){
+        Route::post('/register_plan', 'PaymentMethodController@register_plan');
+    });
 
 //Route::get('widget', ['as' => 'widget', 'uses' => 'WidgetController@index']);
 //Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
