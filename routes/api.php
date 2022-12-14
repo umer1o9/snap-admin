@@ -23,6 +23,9 @@ use Illuminate\Support\Facades\Validator;
 Route::post('/user/login', 'ApiController\CustomerController@customer_login');
 //Register User
 Route::post('/user/register', 'ApiController\CustomerController@register');
+//Constact US
+Route::post('/contact_us', ['as' => '/contact_us', 'uses' => 'ApiController\CustomerController@contact_us']);
+
 
 Route::group(['prefix'=>'user','as'=>'workflow', 'middleware' => ['auth:sanctum'], 'namespace' => 'ApiController' ], function(){
     Route::get('/', ['as' => '/', 'uses' => 'CustomerController@get_user_detail']);
@@ -35,11 +38,14 @@ Route::group(['prefix'=>'workflow','as'=>'workflow', 'middleware' => ['auth:sanc
     Route::post('/get_title', ['as' => 'get_title', 'uses' => 'GetTitleController@get_title']);
 });
 
+    //Get Title open API
+    Route::post('/get_title', ['as' => 'get_title', 'uses' => 'ApiController\GetTitleController@get_title']);
+
+    Route::get('widget/get_categories', ['as' => '/get_categories', 'uses' => 'ApiController\WidgetController@get_categories']);
+    Route::get('widget/', ['as' => '/', 'uses' => 'ApiController\WidgetController@index']);
 
 Route::group(['prefix'=>'widget', 'middleware' => ['auth:sanctum'], 'as'=>'widget', 'namespace' => 'ApiController' ], function(){
-    Route::get('/', ['as' => '/', 'uses' => 'WidgetController@index']);
     Route::get('/results', ['as' => '/results', 'uses' => 'WidgetController@results']);
-    Route::get('/get_categories', ['as' => '/get_categories', 'uses' => 'WidgetController@get_categories']);
 
     Route::post('/sales_copy', ['as' => 'sales_copy', 'uses' => 'SalesCopyController@sales_copy']);
     Route::post('/co_write', ['as' => '/co_write', 'uses' => 'CoWriteController@co_writing']);
@@ -56,13 +62,6 @@ Route::group(['prefix'=>'widget', 'middleware' => ['auth:sanctum'], 'as'=>'widge
         Route::post('/register_plan', 'PaymentMethodController@register_plan');
         Route::post('/user_sales', 'PaymentMethodController@sales');
     });
-
-//Route::get('widget', ['as' => 'widget', 'uses' => 'WidgetController@index']);
-//Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//    Route::post('/workflow/get_section', ['as' => 'get_section', 'uses' => 'GetSectionController@index']);
-//
-//});
-
 
 Route::post('/tokens/create', function (Request $request) {
 	//dd($request->toArray());

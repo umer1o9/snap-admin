@@ -5,6 +5,7 @@ namespace App\Http\Controllers\ApiController;
 use App\Http\Controllers\Controller;
 use App\Models\ApiModel\AllowedSearch;
 use App\Models\ApiModel\ConsumedSearchHistory;
+use App\Models\ApiModel\ContactUs;
 use App\Models\ApiModel\LoginHistory;
 use App\Models\ApiModel\Plan;
 use App\Models\ApiModel\Sales;
@@ -125,17 +126,29 @@ class CustomerController extends Controller
         $user = Auth::user();
         $response = ['status' => true, 'code' => 402, 'message' => '', 'data' => []];
         $user_detail = User::with(['allowed_searches'])->find($user->id);
-//        $plan = Plan::select(DB::raw("COUNT(*) as no_of_allowed_searches"))->where(['user_id' => $user->id, 'status' => 1])->get();
-//        dd($plan);
-        $sales = Sales::with(['plans', 'allowed_searches'])->where('user_id', $user->id)->get();
+
+        $sales = Sales::with(['plans'=> function($q){
+            $q->where('status', 1);
+        }, 'allowed_searches'])->where('user_id', $user->id)->get();
         $no_of_searches = 0;
+        $no_of_all_searches = 0;
+        $custom_plan_ids = [];
+        $all_plan_ids = [];
         foreach ($sales as $sale){
             if ($sale->plans){
-                $no_of_searches += $sale->plans->no_of_allowed_searches;
+                if ($sale->plans->name == 'all_widgets'){
+                    $no_of_all_searches += $sale->plans->no_of_allowed_searches;
+                    $all_plan_ids[] = $sale->allowed_searches->id;
+                }else{
+                    $no_of_searches += $sale->plans->no_of_allowed_searches;
+                    $custom_plan_ids[] = $sale->allowed_searches->id;
+                }
             }
         }
+
         $user_detail['sales'] = $sales;
         $user_detail['no_of_allowed_searches'] = $no_of_searches;
+        $user_detail['no_of_all_searches'] = $no_of_all_searches;
 
         $user_detail['get_section'] = 0;
         $user_detail['get_title'] = 0;
@@ -162,8 +175,15 @@ class CustomerController extends Controller
             $user_detail['easy_to_read'] += $allowed_search->easy_to_read;
             $user_detail['professional_talk'] += $allowed_search->professional_talk;
         }
-        $consumed_searches = ConsumedSearchHistory::select('widget_code', DB::raw('count(*) as total'))->where('user_id', $user->id)->groupBy('widget_code')->get();
+        $consumed_searches = ConsumedSearchHistory::select('widget_code', DB::raw('count(*) as total'))->where('user_id', $user->id)
+            ->whereIn('allowed_search_id', $custom_plan_ids)->groupBy('widget_code')->get();
+
+
+        $consumed_all_searches = ConsumedSearchHistory::select(DB::raw('count(*) as total'))->where('user_id', $user->id)
+            ->whereIn('allowed_search_id', $all_plan_ids)->get();
+
         $user_detail['consumed_searches'] = $consumed_searches;
+        $user_detail['consumed_all_searches'] = $consumed_all_searches;
         if ($user_detail){
             $response = ['status' => false, 'code' => 200, 'message' => '', 'data' => ['user' => $user_detail]];
         }
@@ -203,6 +223,16 @@ class CustomerController extends Controller
         }else{
             $response = ['status' => false, 'code' => 402, 'message' => 'Password update error', 'data' => []];
         }
+        return response()->json($response);
+    }
+
+    public function contact_us(Request $request){
+        $contact_us = new ContactUs();
+        $contact_us->name = $request->name;
+        $contact_us->email = $request->email;
+        $contact_us->message = $request->message;
+        $contact_us->save();
+        $response = ['status' => true, 'code' => 200, 'message' => 'Thanks '.$request->name.', Your Request submitted successfully', 'data' => []];
         return response()->json($response);
     }
 }

@@ -33,12 +33,13 @@ class PaymentMethodController extends Controller
             'remarks' => ['required'],
         ]);
         DB::beginTransaction();
-//        try {
+        try {
             $user = Auth::user();
             //TODO: create Plan first
             $plan = new Plan();
             $plan->name = $request->plan_type;
             $plan->no_of_allowed_searches = $request->total_count;
+            $plan->words = $request->total_words;
             $plan->status = 0; //TODO: need to develop auto Active -> Default Unselected for now
             $plan->price = $request->total_price;
             $plan->currency = 'PKR';
@@ -47,7 +48,7 @@ class PaymentMethodController extends Controller
             $plan->type = 'paid';
             $plan->save();
             //TODO: Entry in Allowed Search Table must be a another function
-            $allowed_search = $this->add_allowed_search($request->selected_widgets, $plan->id, $user->id);
+            $allowed_search = $this->add_allowed_search($request->selected_widgets, $plan->id, $request->plan_type, $user->id);
             //TODO: create Sale With plan ID
 
             $sale = new Sales();
@@ -68,12 +69,12 @@ class PaymentMethodController extends Controller
             DB::commit();
             return response()->json(['code' => 200 , 'status' => true ,'message' => 'Plan added successfully, will be active in 12Hours']);
 
-//        }catch (\Exception $ex) {
-//            return response()->json(['code' => 422 , 'status' => false ,'message' => $ex->getMessage()]);
-//        }
+        }catch (\Exception $ex) {
+            return response()->json(['code' => 422 , 'status' => false ,'message' => $ex->getMessage()]);
+        }
     }
 
-    private function add_allowed_search($widgets, $plan_id, $user_id){
+    private function add_allowed_search($widgets, $plan_id, $plan_type, $user_id){
         $allowed_searches = new AllowedSearch();
         $allowed_searches->user_id = $user_id;
         $allowed_searches->sale_id = 0;
@@ -91,11 +92,13 @@ class PaymentMethodController extends Controller
         $allowed_searches->linkedin_post = 0;
         $allowed_searches->professional_talk = 0;
         $allowed_searches->save();
-        foreach (json_decode($widgets) as $widget){
-            $db_widget = Widget::find($widget->widget_id);
-            if ($db_widget){
-                $code = $db_widget->code;
-                $allowed_searches->$code = $widget->qty;
+        if ($plan_type != 'all_widgets'){
+            foreach (json_decode($widgets) as $widget){
+                $db_widget = Widget::find($widget->widget_id);
+                if ($db_widget){
+                    $code = $db_widget->code;
+                    $allowed_searches->$code = $widget->qty;
+                }
             }
         }
         $allowed_searches->save();

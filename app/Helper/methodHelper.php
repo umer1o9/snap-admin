@@ -2,7 +2,8 @@
 
 use App\Models\ApiModel\AllowedSearch;
 use App\Models\ApiModel\ConsumedSearchHistory;
-use App\Models\ApiModel\Widget;
+    use App\Models\ApiModel\Sales;
+    use App\Models\ApiModel\Widget;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\Auth;
 
@@ -82,13 +83,54 @@ if (! function_exists('text_moderation')){
 
     if (! function_exists('check_consumed_searches')) {
         function check_consumed_searches($widget_code, $user_id){
-            $allowed_searches = AllowedSearch::where('user_id', $user_id)->where('is_closed', 0)->first();
+            //TODO: get both type of Sales
+            $sales = Sales::with(['plans'=> function($q){
+                $q->where('status', 1);
+            }, 'allowed_searches'])->where('user_id', $user_id)->get();
+
+            //TODO: filter plan types
+            $no_of_searches = 0;
+            $no_of_all_searches = 0;
+            $custom_plan_ids = [];
+            $all_plan_ids = [];
+            foreach ($sales as $sale){
+                if ($sale->plans){
+                    if ($sale->plans->name == 'all_widgets'){
+                        $no_of_all_searches += $sale->allowed_searches->id;
+                        $all_plan_ids[] = $sale->id;
+                    }else{
+                        $no_of_searches += $sale->plans->no_of_allowed_searches;
+                        $custom_plan_ids[] = $sale->allowed_searches->id;
+                    }
+                }
+            }
+
+
+            $allowed_searches = AllowedSearch::where('user_id', $user_id)->whereIn('sale_id', $custom_plan_ids)->where('is_closed', 0)->get();
+            $allowed_searches_all = AllowedSearch::where('user_id', $user_id)->whereIn('sale_id', $all_plan_ids)->where('is_closed', 0)->get();
+            $widget = Widget::where('code', $widget_code)->first();
             if ($allowed_searches != null){
-                $widget = Widget::where('code', $widget_code)->first();
-                //Calculate consumed Searches
-                $consumed_searches = ConsumedSearchHistory::where('widget_id', $widget->id)->where('user_id', $user_id)->get();
-                if (count($consumed_searches) < $allowed_searches->$widget_code || $allowed_searches->$widget_code == null){
-                    return json_encode(['status' => true, 'allowed_search_id' => $allowed_searches->id, 'pending' => $allowed_searches->$widget_code - count($consumed_searches)]);
+
+                foreach ($allowed_searches as $allowed_search) {
+                    //Calculate consumed Searches
+                    $consumed_searches = ConsumedSearchHistory::where('widget_id', $widget->id)->where('allowed_search_id', $allowed_search->id)->where('user_id', $user_id)->get();
+                    if (count($consumed_searches) < $allowed_search->$widget_code || $allowed_search->$widget_code == null){
+                        return json_encode(['status' => true, 'allowed_search_id' => $allowed_search->id, 'pending' => $allowed_search->$widget_code - count($consumed_searches)]);
+                    }
+//                    else{
+//                        $allowed_search->is_closed = 1;
+//                        $allowed_search->save();
+//                    }
+                }
+            }
+
+            if ($allowed_searches_all != null){
+                foreach ($allowed_searches_all as $allowed_search) {
+                    //Calculate consumed Searches
+                    $consumed_searches = ConsumedSearchHistory::where('widget_id', $widget->id)->where('allowed_search_id', $allowed_search->id)->where('user_id', $user_id)->get();
+                    if (count($consumed_searches) < $allowed_search->$widget_code || $allowed_search->$widget_code == null){
+                        return json_encode(['status' => true, 'allowed_search_id' => $allowed_search->id, 'pending' => $allowed_search->$widget_code - count($consumed_searches)]);
+                    }
                 }
             }
             return json_encode(['status' => false, 'allowed_search_id' => null, 'pending' => null]);

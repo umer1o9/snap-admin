@@ -17,6 +17,8 @@ class CreatePlansTable extends Migration
             $table->id();
             $table->string('name');
             $table->integer('no_of_allowed_searches')->default(15);
+            $table->integer('words')->default(1500);
+            $table->integer('time_saved')->default(150);
             $table->boolean('status')->default(1);
             $table->integer('price');
             $table->string('currency')->default('PKR');

@@ -17,6 +17,8 @@ class CreateWidgetsTable extends Migration
             $table->id();
             $table->string('category_code')->nullable();
             $table->string('category_id')->nullable();
+            $table->integer('words');
+            $table->string('saved_seconds');
             $table->string('name');
             $table->string('code')->nullable();
             $table->string('Label');
