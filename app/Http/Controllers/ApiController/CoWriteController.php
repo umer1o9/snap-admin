@@ -90,7 +90,7 @@ class CoWriteController extends Controller
         return [
             "prompt"=> $question,
             "temperature"=> $creativity['temperature'],
-            "max_tokens"=> 500,
+            "max_tokens"=> 120,
             "top_p"=> 1,
             "stop"=> " \nEND",
             "logprobs"=> 5,

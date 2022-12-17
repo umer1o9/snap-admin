@@ -48,6 +48,61 @@ class WidgetController extends Controller
 
         }
         $code = $request->input('code');
+        $search_id = $request->input('search_id');
+        $query = null;
+        if ($code == 'get_title'){
+            $query = GetTitle::where('user_id', $user->id);
+        }else if($code == 'get_section'){
+            $query = GetSection::where('user_id', $user->id);
+        }else if($code == 'sales_copy'){
+            $query = SalesCopy::where('user_id', $user->id);
+        }else if ($code == 'expend_blogpost'){
+            $query = CoWrite::where('user_id', $user->id);
+        }else if($code == 'linkedin_post'){
+            $query = LinkedinPost::where('user_id', $user->id);
+        }else if($code == 'professional_talk'){
+            $query = ProfessionalTalk::where('user_id', $user->id);
+        }else if ($code == 'video_script'){
+            $query = VideoScript::where('user_id', $user->id);
+        }
+
+
+
+        if ($query == null){
+            response()->json(['code' => 402, 'status' => true, 'message' => 'Please provide a valid Code', 'data' => []]);
+        }
+        if ($search_id){
+            $query = $query->where('id', $search_id);
+        }else{
+            $result = $query->where('valid', 1)->get();
+        }
+
+        if ($code == 'expend_blogpost'){
+            foreach ($result as $data){
+                if ($data->parent_id == null){
+                    $child_response = $this->find_last_article($data->id);
+                    $data->response = $child_response['response'];
+                    $data['child_section_to_expend'] = $child_response['child_section_to_expend'];
+                }
+            }
+        }
+
+        foreach ($result as $key => $data){
+            if ($data->response != null){
+                $data->response = unserialize($data->response);
+            }
+        }
+        return response()->json(['code' => 200, 'status' => true, 'message' => 'Success', 'data' => $result]);
+    }
+
+    public function result(Request $request){
+        $user = Auth::user();
+        if (!$user){
+            response()->json(['code' => 402, 'status' => true, 'message' => 'Please Login', 'data' => []]);
+
+        }
+        $code = $request->input('code');
+        $code = $request->input('widget_id');
         $query = null;
         if ($code == 'get_title'){
             $query = GetTitle::where('user_id', $user->id);

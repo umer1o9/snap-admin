@@ -60,7 +60,7 @@ class SalesCopyController extends Controller
                 update_consumed_search_history($this->widget_code, $user->id, $allowed_searches);
 
                 // TODO : Return Success
-                $response = ['code' => 200, 'status' => true, 'message' => 'Success', 'data' =>  json_decode($competition['response'])->choices ];
+                $response = ['code' => 200, 'status' => true, 'message' => 'Success', 'data' =>  json_decode($competition['response'])->choices, 'request_data' => $request_data ];
                 DB::commit();
                 return response()->json($response);
             }else{
@@ -76,8 +76,12 @@ class SalesCopyController extends Controller
 
     public function create_request($data){
         $creativity = $this->creativity($data['creativity']);
-        if ($data['writing_style'] == 'storymode'){ $question = "Write a sales copy in storytelling mode to sell the following:\n\n" . $data['about'] . "\n\n";}
-        else{$question = "Write a sales copy in a " . $data['writing_style'] . " style to sell the following:\n\n" . $data['about'] . "\n\n";}
+        if ($data['writing_style'] == 'storymode'){
+            $question = "Write a sales copy in storytelling mode to sell the following:\n\n" . $data['about'] . "\n\n";
+        }
+        else{
+            $question = "Write a sales copy in a " . $data['writing_style'] . " style to sell the following:\n\n" . $data['about'] . "\n\n";
+        }
 
         return [
             "prompt"=> $question,

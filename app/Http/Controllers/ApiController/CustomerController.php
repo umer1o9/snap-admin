@@ -9,6 +9,7 @@ use App\Models\ApiModel\ContactUs;
 use App\Models\ApiModel\LoginHistory;
 use App\Models\ApiModel\Plan;
 use App\Models\ApiModel\Sales;
+use App\Models\ApiModel\Widget;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -126,7 +127,6 @@ class CustomerController extends Controller
         $user = Auth::user();
         $response = ['status' => true, 'code' => 402, 'message' => '', 'data' => []];
         $user_detail = User::with(['allowed_searches'])->find($user->id);
-
         $sales = Sales::with(['plans'=> function($q){
             $q->where('status', 1);
         }, 'allowed_searches'])->where('user_id', $user->id)->get();
@@ -134,6 +134,7 @@ class CustomerController extends Controller
         $no_of_all_searches = 0;
         $custom_plan_ids = [];
         $all_plan_ids = [];
+        $user_detail['paid'] = 0;
         foreach ($sales as $sale){
             if ($sale->plans){
                 if ($sale->plans->name == 'all_widgets'){
@@ -142,6 +143,12 @@ class CustomerController extends Controller
                 }else{
                     $no_of_searches += $sale->plans->no_of_allowed_searches;
                     $custom_plan_ids[] = $sale->allowed_searches->id;
+                }
+            }
+
+            if ($sale->plans){
+                if ($sale->plans->name != 'free'){
+                    $user_detail['paid'] = 1;
                 }
             }
         }
@@ -182,6 +189,15 @@ class CustomerController extends Controller
         $consumed_all_searches = ConsumedSearchHistory::select(DB::raw('count(*) as total'))->where('user_id', $user->id)
             ->whereIn('allowed_search_id', $all_plan_ids)->get();
 
+        $all_consumed = ConsumedSearchHistory::where('user_id', $user->id)->get();
+        $data = ['consumed_count' => 0, 'words'=> 0, 'time_saved' => 0];
+        foreach ($all_consumed as $consumed){
+            $widget = Widget::find($consumed->widget_id);
+            $data['consumed_count'] += 1;
+            $data['words'] += $widget->words;
+            $data['time_saved'] += $widget->saved_seconds;
+        }
+        $user_detail['main_data'] = $data;
         $user_detail['consumed_searches'] = $consumed_searches;
         $user_detail['consumed_all_searches'] = $consumed_all_searches;
         if ($user_detail){
@@ -226,7 +242,7 @@ class CustomerController extends Controller
         return response()->json($response);
     }
 
-    public function contact_us(Request $request){
+    function contact_us(Request $request){
         $contact_us = new ContactUs();
         $contact_us->name = $request->name;
         $contact_us->email = $request->email;
