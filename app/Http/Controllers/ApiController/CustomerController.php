@@ -127,16 +127,14 @@ class CustomerController extends Controller
         $user = Auth::user();
         $response = ['status' => true, 'code' => 402, 'message' => '', 'data' => []];
         $user_detail = User::with(['allowed_searches'])->find($user->id);
-        $sales = Sales::with(['plans'=> function($q){
-            $q->where('status', 1);
-        }, 'allowed_searches'])->where('user_id', $user->id)->get();
+        $sales = Sales::with(['plans', 'allowed_searches'])->where('user_id', $user->id)->get();
         $no_of_searches = 0;
         $no_of_all_searches = 0;
         $custom_plan_ids = [];
         $all_plan_ids = [];
         $user_detail['paid'] = 0;
         foreach ($sales as $sale){
-            if ($sale->plans){
+            if ($sale->plans->status == 1){
                 if ($sale->plans->name == 'all_widgets'){
                     $no_of_all_searches += $sale->plans->no_of_allowed_searches;
                     $all_plan_ids[] = $sale->allowed_searches->id;
@@ -168,6 +166,7 @@ class CustomerController extends Controller
         $user_detail['brain_stormer'] = 0;
         $user_detail['action_item'] = 0;
         $user_detail['professional_talk'] = 0;
+        $user_detail['convert_into_benefits'] = 0;
 
         foreach ($user_detail->allowed_searches as $allowed_search){
             $user_detail['get_section'] += $allowed_search->get_section;
@@ -181,6 +180,7 @@ class CustomerController extends Controller
             $user_detail['action_item'] += $allowed_search->action_item;
             $user_detail['easy_to_read'] += $allowed_search->easy_to_read;
             $user_detail['professional_talk'] += $allowed_search->professional_talk;
+            $user_detail['convert_into_benefits'] += $allowed_search->convert_into_benefits;
         }
         $consumed_searches = ConsumedSearchHistory::select('widget_code', DB::raw('count(*) as total'))->where('user_id', $user->id)
             ->whereIn('allowed_search_id', $custom_plan_ids)->groupBy('widget_code')->get();

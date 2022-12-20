@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\ApiController;
 
 use App\Http\Controllers\Controller;
+use App\Models\ApiModel\ActionItem;
+use App\Models\ApiModel\ConvertIntoBenefit;
 use App\Models\ApiModel\CoWrite;
+use App\Models\ApiModel\EasyToRead;
 use App\Models\ApiModel\GetTitle;
 use App\Models\ApiModel\LinkedinPost;
 use App\Models\ApiModel\ProfessionalTalk;
@@ -64,9 +67,13 @@ class WidgetController extends Controller
             $query = ProfessionalTalk::where('user_id', $user->id);
         }else if ($code == 'video_script'){
             $query = VideoScript::where('user_id', $user->id);
+        }else if($code == 'action_item'){
+            $query = ActionItem::where('user_id', $user->id);
+        }else if($code == 'easy_to_read'){
+            $query = EasyToRead::where('user_id', $user->id);
+        }else if($code == 'convert_into_benefits'){
+            $query = ConvertIntoBenefit::where('user_id', $user->id);
         }
-
-
 
         if ($query == null){
             response()->json(['code' => 402, 'status' => true, 'message' => 'Please provide a valid Code', 'data' => []]);
@@ -102,7 +109,7 @@ class WidgetController extends Controller
 
         }
         $code = $request->input('code');
-        $code = $request->input('widget_id');
+
         $query = null;
         if ($code == 'get_title'){
             $query = GetTitle::where('user_id', $user->id);
@@ -118,6 +125,12 @@ class WidgetController extends Controller
             $query = ProfessionalTalk::where('user_id', $user->id);
         }else if ($code == 'video_script'){
             $query = VideoScript::where('user_id', $user->id);
+        }else if($code == 'action_item'){
+            $query = ActionItem::where('user_id', $user->id);
+        }else if($code == 'easy_to_read'){
+            $query = EasyToRead::where('user_id', $user->id);
+        }else if($code == 'convert_into_benefits'){
+            $query = ConvertIntoBenefit::where('user_id', $user->id);
         }
 
         if ($query == null){

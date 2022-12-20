@@ -52,6 +52,10 @@ Route::group(['prefix'=>'widget', 'middleware' => ['auth:sanctum'], 'as'=>'widge
     Route::post('/linkedin_post', ['as' => '/linkedin_post', 'uses' => 'LinkedinPostController@index']);
     Route::post('/professional_talk', ['as' => '/professional_talk', 'uses' => 'professionalTalkController@index']);
     Route::post('/video_script', ['as' => '/video_script ', 'uses' => 'VideoScriptController@index']);
+//NEW
+    Route::post('/action_item', ['as' => '/action_item ', 'uses' => 'ActionItemController@action_item']);
+    Route::post('/easy_to_read', ['as' => '/easy_to_read ', 'uses' => 'EasyToReadController@easy_to_read']);
+    Route::post('/convert_into_benefits', ['as' => '/convert_into_benefits ', 'uses' => 'ConvertIntoBenefitsController@convert_into_benefits']);
 
    //Voting
     Route::post('/vote', ['as' => '/vote', 'uses' => 'WidgetController@vote_for_widget']);
