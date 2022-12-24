@@ -134,7 +134,8 @@ class CustomerController extends Controller
         $all_plan_ids = [];
         $user_detail['paid'] = 0;
         foreach ($sales as $sale){
-            if ($sale->plans->status == 1){
+
+            if ($sale->plans != null && $sale->plans->status == 1){
                 if ($sale->plans->name == 'all_widgets'){
                     $no_of_all_searches += $sale->plans->no_of_allowed_searches;
                     $all_plan_ids[] = $sale->allowed_searches->id;

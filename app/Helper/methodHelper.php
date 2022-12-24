@@ -2,8 +2,8 @@
 
 use App\Models\ApiModel\AllowedSearch;
 use App\Models\ApiModel\ConsumedSearchHistory;
-    use App\Models\ApiModel\Sales;
-    use App\Models\ApiModel\Widget;
+use App\Models\ApiModel\Sales;
+use App\Models\ApiModel\Widget;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\Auth;
 

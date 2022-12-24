@@ -72,15 +72,12 @@ class professionalTalkController extends Controller
     }
 
     public function create_request($data){
-        $question = "Make it easy to read by breaking into short paragaphs:\n\n" . $data['message'] . "\n\n";
-
+        $question = "Make it easy to read by breaking into short paragraphs:\n\n" . $data['message'] . " \n\n";
         return [
             "prompt"=> $question,
             "temperature"=> 0,
             "max_tokens"=> 900,
             "top_p"=> 1,
-            "n"=> 1,
-            "best_of"=> 2,
             "logprobs"=> 5,
             "frequency_penalty"=> 0,
             "presence_penalty"=> 0,

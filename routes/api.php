@@ -56,6 +56,7 @@ Route::group(['prefix'=>'widget', 'middleware' => ['auth:sanctum'], 'as'=>'widge
     Route::post('/action_item', ['as' => '/action_item ', 'uses' => 'ActionItemController@action_item']);
     Route::post('/easy_to_read', ['as' => '/easy_to_read ', 'uses' => 'EasyToReadController@easy_to_read']);
     Route::post('/convert_into_benefits', ['as' => '/convert_into_benefits ', 'uses' => 'ConvertIntoBenefitsController@convert_into_benefits']);
+    Route::post('/brain_stormer', ['as' => '/brain_stormer ', 'uses' => 'BrainIdeaController@brain_stormer']);
 
    //Voting
     Route::post('/vote', ['as' => '/vote', 'uses' => 'WidgetController@vote_for_widget']);
