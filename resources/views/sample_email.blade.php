@@ -123,7 +123,7 @@
                                                     <tr>
                                                         <td style="padding-right: 0px;padding-left: 0px;" align="center">
                                                             <a href="https://snaprytr.com/" target="_blank">
-                                                                <img align="center" border="0" src="{{ asset('/assets/images/email/image-7.png') }}" alt="SnapRytr" title="SnapRytr" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 37%;max-width: 214.6px;" width="214.6"/>
+                                                                <img align="center" border="0" src="{{ asset('/resources/assets/images/email/image-7.png') }}" alt="SnapRytr" title="SnapRytr" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 37%;max-width: 214.6px;" width="214.6"/>
                                                             </a>
                                                         </td>
                                                     </tr>
@@ -176,7 +176,7 @@
                                                     <tr>
                                                         <td style="padding-right: 0px;padding-left: 0px;" align="center">
 
-                                                            <img align="center" border="0" src="{{ asset('/assets/images/email/image-8.png') }}" alt="" title="" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 100%;max-width: 580px;" width="580"/>
+                                                            <img align="center" border="0" src="{{ asset('/resources/assets/images/email/image-8.png') }}" alt="" title="" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 100%;max-width: 580px;" width="580"/>
 
                                                         </td>
                                                     </tr>
@@ -271,7 +271,7 @@
                                                     <tr>
                                                         <td style="padding-right: 0px;padding-left: 0px;" align="center">
 
-                                                            <img align="center" border="0" src="{{ asset('/assets/images/email/image-4.png') }}" alt="" title="" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 100%;max-width: 280px;" width="280"/>
+                                                            <img align="center" border="0" src="{{ asset('/resources/assets/images/email/image-4.png') }}" alt="" title="" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 100%;max-width: 280px;" width="280"/>
 
                                                         </td>
                                                     </tr>
@@ -347,7 +347,7 @@
                                                     <tr>
                                                         <td style="padding-right: 0px;padding-left: 0px;" align="center">
 
-                                                            <img align="center" border="0" src="{{ asset('/assets/images/email/image-5.png') }}" alt="" title="" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 100%;max-width: 280px;" width="280"/>
+                                                            <img align="center" border="0" src="{{ asset('/resources/assets/images/email/image-5.png') }}" alt="" title="" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 100%;max-width: 280px;" width="280"/>
 
                                                         </td>
                                                     </tr>
@@ -423,7 +423,7 @@
                                                     <tr>
                                                         <td style="padding-right: 0px;padding-left: 0px;" align="center">
 
-                                                            <img align="center" border="0" src="{{ asset('/assets/images/email/image-8.png') }}" alt="" title="" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 100%;max-width: 280px;" width="280"/>
+                                                            <img align="center" border="0" src="{{ asset('/resources/assets/images/email/image-8.png') }}" alt="" title="" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 100%;max-width: 280px;" width="280"/>
 
                                                         </td>
                                                     </tr>
@@ -523,7 +523,7 @@
                                                         <table align="left" border="0" cellspacing="0" cellpadding="0" width="32" height="32" style="width: 32px !important;height: 32px !important;display: inline-block;border-collapse: collapse;table-layout: fixed;border-spacing: 0;mso-table-lspace: 0pt;mso-table-rspace: 0pt;vertical-align: top;margin-right: 10px">
                                                             <tbody><tr style="vertical-align: top"><td align="left" valign="middle" style="word-break: break-word;border-collapse: collapse !important;vertical-align: top">
                                                                     <a href="https://web.facebook.com/snaprytr?_rdc=1&_rdr" title="Facebook" target="_blank">
-                                                                        <img src="{{ asset('/assets/images/email/image-1.png') }}" alt="Facebook" title="Facebook" width="32" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: none;height: auto;float: none;max-width: 32px !important">
+                                                                        <img src="{{ asset('/resources/assets/images/email/image-1.png') }}" alt="Facebook" title="Facebook" width="32" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: none;height: auto;float: none;max-width: 32px !important">
                                                                     </a>
                                                                 </td></tr>
                                                             </tbody></table>
@@ -533,7 +533,7 @@
                                                         <table align="left" border="0" cellspacing="0" cellpadding="0" width="32" height="32" style="width: 32px !important;height: 32px !important;display: inline-block;border-collapse: collapse;table-layout: fixed;border-spacing: 0;mso-table-lspace: 0pt;mso-table-rspace: 0pt;vertical-align: top;margin-right: 10px">
                                                             <tbody><tr style="vertical-align: top"><td align="left" valign="middle" style="word-break: break-word;border-collapse: collapse !important;vertical-align: top">
                                                                     <a href="https://pk.linkedin.com/company/snaprytr" title="LinkedIn" target="_blank">
-                                                                        <img src="{{ asset('/assets/images/email/image-3.png') }}" alt="LinkedIn" title="LinkedIn" width="32" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: none;height: auto;float: none;max-width: 32px !important">
+                                                                        <img src="{{ asset('/resources/assets/images/email/image-3.png') }}" alt="LinkedIn" title="LinkedIn" width="32" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: none;height: auto;float: none;max-width: 32px !important">
                                                                     </a>
                                                                 </td></tr>
                                                             </tbody></table>
@@ -543,7 +543,7 @@
                                                         <table align="left" border="0" cellspacing="0" cellpadding="0" width="32" height="32" style="width: 32px !important;height: 32px !important;display: inline-block;border-collapse: collapse;table-layout: fixed;border-spacing: 0;mso-table-lspace: 0pt;mso-table-rspace: 0pt;vertical-align: top;margin-right: 0px">
                                                             <tbody><tr style="vertical-align: top"><td align="left" valign="middle" style="word-break: break-word;border-collapse: collapse !important;vertical-align: top">
                                                                     <a href="https://www.youtube.com/@SnapRytr" title="YouTube" target="_blank">
-                                                                        <img src="{{ asset('/assets/images/email/image-2.png') }}" alt="YouTube" title="YouTube" width="32" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: none;height: auto;float: none;max-width: 32px !important">
+                                                                        <img src="{{ asset('/resources/assets/images/email/image-2.png') }}" alt="YouTube" title="YouTube" width="32" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: none;height: auto;float: none;max-width: 32px !important">
                                                                     </a>
                                                                 </td></tr>
                                                             </tbody></table>

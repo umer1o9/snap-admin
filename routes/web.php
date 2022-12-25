@@ -17,6 +17,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::get('/test_emails', function () {
+    dump(asset('/resources/assets/images/email/image-1.png'));
     signup_email_test();
 });
 
