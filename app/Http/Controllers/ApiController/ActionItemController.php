@@ -56,6 +56,13 @@ class ActionItemController extends Controller
                 $request_data['user'] = (String)$user->id;
             }
             $competition = competition_open_ai($request_data);
+            if ($competition['code'] == 200){
+                $text = json_decode($competition['response'])->choices[0]->text;
+                $request_data = $this->create_second_request($text);
+                $competition = competition_open_ai($request_data);
+            }else{
+                return response()->json($response);
+            }
             if ($competition['code'] =! 200){
                 return response()->json($response);
             }
@@ -81,8 +88,22 @@ class ActionItemController extends Controller
     }
 
     public function create_request($data){
-        $question = "Classify the Observations and Action Items from this block of text:\n\n" . $data['topic'] . "\n\n";
+        $question = "Make it easy to read by breaking into short paragraphs:\n\n" . $data['topic'] . "\n\n";
         $request = [
+            "prompt"=> $question,
+            "temperature"=> 0,
+            "max_tokens"=> 800,
+            "top_p"=> 1,
+            "logprobs"=> 5,
+            "frequency_penalty"=> 0,
+            "presence_penalty"=> 0,
+
+        ];
+        return $request;
+    }
+    public function create_second_request($data){
+        $question = "Classify the Observations and Action Items from this block of text:\n\n" . $data . " \n\n";
+        return [
             "prompt"=> $question,
             "temperature"=> 0,
             "suffix"=> "Action Items:",
@@ -92,6 +113,5 @@ class ActionItemController extends Controller
             "frequency_penalty"=> 0,
             "presence_penalty"=> 0,
         ];
-        return $request;
     }
 }

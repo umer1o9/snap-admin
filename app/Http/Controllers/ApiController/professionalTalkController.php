@@ -45,6 +45,13 @@ class professionalTalkController extends Controller
                 $request_data = $this->create_request($request->toArray());
                 $request_data['user'] = (String)$user->id;
                 $competition = competition_open_ai($request_data);
+                if ($competition['code'] == 200){
+                    $text = json_decode($competition['response'])->choices[0]->text;
+                    $request_data = $this->create_second_request($text);
+                    $competition = competition_open_ai($request_data);
+                }else{
+                    return response()->json($response);
+                }
                 if ($competition['code'] =! 200){
                     return response()->json($response);
                 }
@@ -77,6 +84,20 @@ class professionalTalkController extends Controller
             "prompt"=> $question,
             "temperature"=> 0,
             "max_tokens"=> 900,
+            "top_p"=> 1,
+            "logprobs"=> 5,
+            "frequency_penalty"=> 0,
+            "presence_penalty"=> 0,
+        ];
+    }
+    public function create_second_request($data){
+        $question = "Rewrite this in professional tone:\n\n" . $data . " \n\n";
+        return [
+            "prompt"=> $question,
+            "temperature"=> 1,
+            "max_tokens"=> 800,
+            "n"=> 3,
+            "best_of"=> 4,
             "top_p"=> 1,
             "logprobs"=> 5,
             "frequency_penalty"=> 0,
