@@ -16,6 +16,9 @@
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get('/test_emails', function () {
+    signup_email_test();
+});
 
 Auth::routes();
 

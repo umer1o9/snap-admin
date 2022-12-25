@@ -115,6 +115,8 @@ class CustomerController extends Controller
             if ($response['code'] == 200){
                 $response['message'] = "Register Successfully";
             }
+            // SEND WELLCOME EMAIL
+            signup_email($user);
             DB::commit();
             return response()->json($response);
         }
