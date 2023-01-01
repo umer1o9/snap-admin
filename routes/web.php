@@ -17,8 +17,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::get('/test_emails', function () {
-    dump(asset('/resources/assets/images/email/image-1.png'));
     signup_email_test();
+});
+Route::get('/buy_plan_email_test', function () {
+    buy_plan_email_test();
 });
 
 Auth::routes();

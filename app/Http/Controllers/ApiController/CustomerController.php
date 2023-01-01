@@ -146,7 +146,6 @@ class CustomerController extends Controller
                     $custom_plan_ids[] = $sale->allowed_searches->id;
                 }
             }
-
             if ($sale->plans){
                 if ($sale->plans->name != 'free'){
                     $user_detail['paid'] = 1;
