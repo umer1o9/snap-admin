@@ -184,4 +184,34 @@ class WidgetController extends Controller
         $widgets_votes->save();
         return response()->json(['code' => 200, 'status' => true, 'message' => 'Vote submitted Successfully', 'data' =>  []]);
     }
+
+    public function compilation(Request $request){
+
+        $moderation_response = text_moderation($request->text);
+        if ($moderation_response['code'] != 200) {
+            $response = ['code' => 422, 'status' => false, 'message' => 'This Text is not allowed', 'data' =>  []];
+            return response()->json($response);
+        }
+
+        $request_data = [
+            "prompt" => $request->text,
+            "temperature" => (integer)$request->configuration[0],
+            "max_tokens" => (integer)$request->configuration[1],
+            "n" => (integer)$request->configuration[2],
+            "best_of" => (integer)$request->configuration[3],
+            "logprobs" => (integer)$request->configuration[4],
+            "frequency_penalty" => (integer)$request->configuration[5],
+            "presence_penalty" => (integer)$request->configuration[6],
+            "top_p" => (integer)$request->configuration[7],
+            "user" => "7",
+        ];
+
+        $competition = competition_open_ai($request_data);
+        if ($competition['code'] == 200){
+            return response()->json(['code' => 200, 'status'=> true , 'message' => 'Success', 'data' => json_decode($competition['response'])->choices]);
+        }else{
+            $response = ['code' => 422, 'status' => false, 'message' => 'Error', 'data' =>  []];
+
+        }
+    }
 }

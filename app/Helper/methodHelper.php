@@ -58,7 +58,7 @@ if (! function_exists('text_moderation')){
         /**
          * @throws GuzzleException
          */
-        function competition_open_ai($data): array
+        function competition_open_ai($data)
         {
             $client = new \GuzzleHttp\Client();
             $url =  config('constants.open_api_base_url')."/engines/text-davinci-002/completions";
@@ -66,8 +66,6 @@ if (! function_exists('text_moderation')){
                 'Content-Type' => 'application/json',
                 'Authorization' => 'Bearer '.env('API_TOKEN' ),
             ];
-
-//            $data['temperature'] = null;
             $open_ai_response = $client->request('POST', $url, [
                 'verify' => false,
                 'headers' => $headers,
