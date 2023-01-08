@@ -16,12 +16,12 @@ class ActionItemController extends Controller
 
     public function action_item(Request $request)
     {
-        $response = ['code' => 422 , 'status' => false ,'message' => 'Server Error', 'description' => 'Some error please contact Admin or check your input.', 'data' => []];
+        $response = ['code' => 422, 'status' => false, 'message' => 'Server Error', 'description' => 'Some error please contact Admin or check your input.', 'data' => []];
         $user = Auth::user();
         $action_item = new ActionItem();
         $action_item->request = serialize($request->toArray());
         $action_item->user_id = 0;
-        if ($user){
+        if ($user) {
             $action_item->user_id = $user->id;
         }
         $action_item->topic = $request->topic;
@@ -33,10 +33,10 @@ class ActionItemController extends Controller
 
         // TODO: check quota for consumed searches
 
-        if ($user){
-            $allowed_searches =  check_consumed_searches($this->widget_code, $user->id);
+        if ($user) {
+            $allowed_searches = check_consumed_searches($this->widget_code, $user->id);
             $allowed_searches = json_decode($allowed_searches);
-            if ($allowed_searches->status == false){
+            if ($allowed_searches->status == false) {
                 $response['message'] = 'Search limit reached.';
                 $response['description'] = 'You have hit your search limit and exhausted free searches quota also. To continue, Buy your search quota';
                 return response()->json($response);
@@ -44,48 +44,53 @@ class ActionItemController extends Controller
         }
 
         try {
-        DB::beginTransaction();
-        //Check Moderation
+            DB::beginTransaction();
+            //Check Moderation
 
-        $moderation_response = text_moderation($request->topic);
+            $moderation_response = text_moderation($request->topic);
 
-        if ($moderation_response['code'] == 200){
-            $request_data = $this->create_request($request->toArray());
-            $request_data['user'] = '0';
-            if ($user){
-                $request_data['user'] = (String)$user->id;
-            }
-            $competition = competition_open_ai($request_data);
-            if ($competition['code'] == 200){
-                $text = json_decode($competition['response'])->choices[0]->text;
-                $request_data = $this->create_second_request($text);
+            if ($moderation_response['code'] == 200) {
+                $request_data = $this->create_request($request->toArray());
+                $request_data['user'] = '0';
+                if ($user) {
+                    $request_data['user'] = (string)$user->id;
+                }
                 $competition = competition_open_ai($request_data);
-            }else{
+                if ($competition['code'] == 200) {
+                    $text = json_decode($competition['response'])->choices[0]->text;
+                    $request_data = $this->create_second_request($text);
+                    $competition = competition_open_ai($request_data);
+                } else {
+                    return response()->json($response);
+                }
+                if ($competition['code'] = !200) {
+                    return response()->json($response);
+                }
+                // Complete  : Store Response
+                $action_item->response = serialize($competition['response']);
+                $action_item->valid = 1;
+                $action_item->save();
+
+                // TODO : Update Consumed history
+                if ($user) {
+                    update_consumed_search_history($this->widget_code, $user->id, $allowed_searches);
+                }
+
+                // TODO : Return Success
+                $response = ['code' => 200, 'status' => true, 'message' => 'Success', 'data' => json_decode($competition['response'])->choices, 'request' => $request_data];
+                DB::commit();
                 return response()->json($response);
             }
-            if ($competition['code'] =! 200){
-                return response()->json($response);
+        } catch (\Exception $ex) {
+            $message = $ex->getMessage();
+            $message = 'That model is currently overloaded with other requests. You can retry your request, or contact to Admin';
+            if ($ex->getCode() == 429 || $ex->getCode() == 503) {
+                $message = 'That model is currently overloaded with other requests. You can retry your request, or contact to Admin';
             }
-            // Complete  : Store Response
-            $action_item->response = serialize($competition['response']);
-            $action_item->valid = 1;
-            $action_item->save();
-
-            // TODO : Update Consumed history
-            if ($user){
-                update_consumed_search_history($this->widget_code, $user->id, $allowed_searches);
-            }
-
-            // TODO : Return Success
-            $response = ['code' => 200, 'status' => true, 'message' => 'Success', 'data' =>  json_decode($competition['response'])->choices, 'request' => $request_data ];
-            DB::commit();
-            return response()->json($response);
-        }
-        }
-        catch (\Exception $ex) {
-            return response()->json(['code' => 422 , 'status' => false ,'message' => $ex->getMessage()]);
+            return response()->json(['code' => $ex->getCode(), 'status' => false, 'message' => $message]);
         }
     }
+
 
     public function create_request($data){
         $question = "Make it easy to read by breaking into short paragraphs:\n\n" . $data['topic'] . "\n\n";

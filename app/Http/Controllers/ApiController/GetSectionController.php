@@ -76,13 +76,18 @@ class GetSectionController extends Controller
                 update_consumed_search_history($this->widget_code, $user->id, $allowed_searches);
 
                 // TODO : Return Success
-                $response = ['code' => 200, 'status' => true, 'message' => 'Success', 'data' =>  json_decode($competition['response'])->choices ];
+                $response = ['code' => 200, 'status' => true, 'message' => 'Success', 'data' =>  json_decode($competition['response'])->choices, 'request' => $request_data ];
                 DB::commit();
                 return response()->json($response);
             }
         }
             catch (\Exception $ex) {
-            return response()->json(['code' => 422 , 'status' => false ,'message' => $ex->getMessage()]);
+                $message = $ex->getMessage();
+                $message = 'That model is currently overloaded with other requests. You can retry your request, or contact to Admin';
+                if ($ex->getCode() == 429 || $ex->getCode() == 503) {
+                    $message = 'That model is currently overloaded with other requests. You can retry your request, or contact to Admin';
+                }
+                return response()->json(['code' => $ex->getCode(), 'status' => false, 'message' => $message]);
         }
     }
 

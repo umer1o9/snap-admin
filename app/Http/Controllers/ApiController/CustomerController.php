@@ -116,7 +116,7 @@ class CustomerController extends Controller
                 $response['message'] = "Register Successfully";
             }
             // SEND WELLCOME EMAIL
-            signup_email($user);
+//            signup_email($user);
             DB::commit();
             return response()->json($response);
         }

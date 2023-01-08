@@ -60,22 +60,30 @@ if (! function_exists('text_moderation')){
          */
         function competition_open_ai($data)
         {
-            $client = new \GuzzleHttp\Client();
-            $url =  config('constants.open_api_base_url')."/engines/text-davinci-002/completions";
-            $headers = [
-                'Content-Type' => 'application/json',
-                'Authorization' => 'Bearer '.env('API_TOKEN' ),
-            ];
-            $open_ai_response = $client->request('POST', $url, [
-                'verify' => false,
-                'headers' => $headers,
-                'body' => json_encode($data)
-            ]);
+            try {
+                $client = new \GuzzleHttp\Client();
+                $url =  config('constants.open_api_base_url')."/engines/text-davinci-003/completions";
+                $headers = [
+                    'Content-Type' => 'application/json',
+                    'Authorization' => 'Bearer '.env('API_TOKEN' ),
+                ];
+                $open_ai_response = $client->request('POST', $url, [
+                    'verify' => false,
+                    'headers' => $headers,
+                    'body' => json_encode($data)
+                ]);
 
-            $status = $open_ai_response->getStatusCode();
-            $response = $open_ai_response->getBody()->getContents();
+                $status = $open_ai_response->getStatusCode();
+                $response = $open_ai_response->getBody()->getContents();
 
-            return ['code' => $status, 'response' => $response];
+
+                return ['code' => $status, 'response' => $response];
+            }catch (ClientErrorResponseException $exception) {
+                $responseBody = $exception->getResponse()->getBody(true);
+                return ['code' => 422, 'response' => json_decode($responseBody)];
+
+            }
+
         }
     }
 

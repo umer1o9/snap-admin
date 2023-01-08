@@ -43,7 +43,6 @@ class CoWriteController extends Controller
             }
             return response()->json($response);
         }
-
         //Main Body
         try{
             DB::beginTransaction();
@@ -62,7 +61,6 @@ class CoWriteController extends Controller
 
                 // TODO : Update Consumed history
                 update_consumed_search_history($this->widget_code, $user->id, $allowed_searches);
-
                 // TODO : Return Success
                 $response = ['request_data' => $request_data, 'code' => 200, 'status' => true, 'message' => 'Success', 'id' => $co_write->id, 'parent_id' => $co_write->parent_id , 'data' =>  json_decode($competition['response'])->choices ];
                 DB::commit();
@@ -74,7 +72,12 @@ class CoWriteController extends Controller
             }
         }
         catch (\Exception $ex) {
-            return response()->json(['code' => 422 , 'status' => false ,'message' => $ex->getMessage()]);
+            $message = $ex->getMessage();
+            $message = 'That model is currently overloaded with other requests. You can retry your request, or contact to Admin';
+            if ($ex->getCode() == 429 || $ex->getCode() == 503){
+                $message = 'That model is currently overloaded with other requests. You can retry your request, or contact to Admin';
+            }
+            return response()->json(['code' => $ex->getCode() , 'status' => false ,'message' => $ex->getMessage()]);
         }
     }
 
@@ -84,7 +87,7 @@ class CoWriteController extends Controller
         if (isset($data['new_keywords'])){
             $question =  "Based on the ".$data['section_to_expend'].", expand the following using these exact keywords:\n\nExact Keywords:\n".$data['keywords']."\n\nSection to expand:\n".$data['new_keywords']."\n";
         }else{
-            $question = "Here's a detailed article using these exact keywords.\n\nExact Keywords:\n" . $data['keywords'] . "\n\nSection to expand:\n" . $data['section_to_expend'] . "\n\n";
+            $question = "Write a blog section based on [Provided Text] using these [Exact Keywords].\n\n[Exact Keywords]:\n" . $data['keywords'] . "\n\n[Provided Text]:\n" . $data['section_to_expend'] . "\n\n";
         }
 
         return [

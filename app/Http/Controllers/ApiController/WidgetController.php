@@ -4,6 +4,7 @@ namespace App\Http\Controllers\ApiController;
 
 use App\Http\Controllers\Controller;
 use App\Models\ApiModel\ActionItem;
+use App\Models\ApiModel\BrainIdea;
 use App\Models\ApiModel\ConvertIntoBenefit;
 use App\Models\ApiModel\CoWrite;
 use App\Models\ApiModel\EasyToRead;
@@ -15,6 +16,7 @@ use App\Models\ApiModel\VideoScript;
 use App\Models\ApiModel\Widget;
 use App\Models\GetSection;
 use App\Models\ApiModel\WidgetsVote;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -73,6 +75,8 @@ class WidgetController extends Controller
             $query = EasyToRead::where('user_id', $user->id);
         }else if($code == 'convert_into_benefits'){
             $query = ConvertIntoBenefit::where('user_id', $user->id);
+        }else if($code == 'brain_stormer'){
+            $query = BrainIdea::where('user_id', $user->id);
         }
 
         if ($query == null){
@@ -80,77 +84,74 @@ class WidgetController extends Controller
         }
         if ($search_id){
             $query = $query->where('id', $search_id);
-        }else{
-            $result = $query->where('valid', 1)->get();
         }
+            $result = $query->where('valid', 1)->get();
 
         if ($code == 'expend_blogpost'){
-            foreach ($result as $data){
-                if ($data->parent_id == null){
-                    $child_response = $this->find_last_article($data->id);
-                    $data->response = $child_response['response'];
-                    $data['child_section_to_expend'] = $child_response['child_section_to_expend'];
-                }
+            foreach ($result as $key => $data){
+                   $exists = $this->is_exists($data->id, $result);
+                    if ($exists == true){
+                        unset($result[$key]);
+                    }
             }
         }
 
+        $results = [];
         foreach ($result as $key => $data){
+
             if ($data->response != null){
                 $data->response = unserialize($data->response);
             }
+            $data->request = unserialize($data->request);
+            $results[] = $data;
         }
-        return response()->json(['code' => 200, 'status' => true, 'message' => 'Success', 'data' => $result]);
+
+        return response()->json(['code' => 200, 'status' => true, 'message' => 'Success', 'data' => $results]);
     }
-
-    public function result(Request $request){
-        $user = Auth::user();
-        if (!$user){
-            response()->json(['code' => 402, 'status' => true, 'message' => 'Please Login', 'data' => []]);
-
+    public function is_exists($id, $result){
+        foreach ($result as $data){
+            if ($data->parent_id == $id){
+                return true;
+            }
         }
+        return false;
+    }
+    public function result(Request $request){
         $code = $request->input('code');
+        $result_id = $request->input('result_id');
+        $user_id = $request->input('user_id');
 
         $query = null;
-        if ($code == 'get_title'){
-            $query = GetTitle::where('user_id', $user->id);
-        }else if($code == 'get_section'){
-            $query = GetSection::where('user_id', $user->id);
-        }else if($code == 'sales_copy'){
-            $query = SalesCopy::where('user_id', $user->id);
-        }else if ($code == 'expend_blogpost'){
-            $query = CoWrite::where('user_id', $user->id);
-        }else if($code == 'linkedin_post'){
-            $query = LinkedinPost::where('user_id', $user->id);
-        }else if($code == 'professional_talk'){
-            $query = ProfessionalTalk::where('user_id', $user->id);
-        }else if ($code == 'video_script'){
-            $query = VideoScript::where('user_id', $user->id);
-        }else if($code == 'action_item'){
-            $query = ActionItem::where('user_id', $user->id);
-        }else if($code == 'easy_to_read'){
-            $query = EasyToRead::where('user_id', $user->id);
-        }else if($code == 'convert_into_benefits'){
+        if ($code == 'get-title'){
+            $query = GetTitle::where('id', $result_id);
+        }else if($code == 'get_section' || $code == 'get-section'){
+            $query = GetSection::where('id', $result_id);
+        }else if($code == 'sales_copy' || $code == 'sales-copy'){
+            $query = SalesCopy::where('id', $result_id);
+        }else if ($code == 'expend_blogpost' || $code == 'expend-blogpost'){
+            $query = CoWrite::where('id', $result_id);
+        }else if($code == 'linkedin_post' || $code == 'linkedin-post'){
+            $query = LinkedinPost::where('id', $result_id);
+        }else if($code == 'professional_talk' || $code == 'professional-talk'){
+            $query = ProfessionalTalk::where('id', $result_id);
+        }else if ($code == 'video_script' || $code == 'video-script'){
+            $query = VideoScript::where('id', $result_id);
+        }else if($code == 'action_item' || $code == 'action-item'){
+            $query = ActionItem::where('id', $result_id);
+        }else if($code == 'easy_to_read' || $code == 'easy-to-read'){
+            $query = EasyToRead::where('id', $result_id);
+        }else if($code == 'convert_into_benefits' || $code == 'convert-into-benefits'){
             $query = ConvertIntoBenefit::where('user_id', $user->id);
         }
 
-        if ($query == null){
-            response()->json(['code' => 402, 'status' => true, 'message' => 'Please provide a valid Code', 'data' => []]);
-        }
-        $result = $query->where('valid', 1)->get();
-
-        if ($code == 'expend_blogpost'){
-            foreach ($result as $data){
-                if ($data->parent_id == null){
-                    $child_response = $this->find_last_article($data->id);
-                    $data->response = $child_response['response'];
-                    $data['child_section_to_expend'] = $child_response['child_section_to_expend'];
-                }
-            }
-        }
-
-        foreach ($result as $key => $data){
-            if ($data->response != null){
-                $data->response = unserialize($data->response);
+        $result = $query->first();
+        $result->request = unserialize($result->request);
+        $result->response = unserialize($result->response);
+        $widget_user = User::find($result->user_id);
+        $result['user_name'] = $widget_user->first_name;
+        if ($user_id != $result->user_id){
+            if ($result->is_public == 0){
+                return response()->json(['code' => 404, 'status' => false, 'message' => 'This Content is not Public', 'data' => []]);
             }
         }
         return response()->json(['code' => 200, 'status' => true, 'message' => 'Success', 'data' => $result]);
@@ -162,8 +163,6 @@ class WidgetController extends Controller
         if ($child_co_write != null){
             return $this->find_last_article($child_co_write->id);
         }
-//        dd($current_co_write->request);
-//        dd(unserialize($current_co_write->request));
         return ['response' => $current_co_write->response, 'child_section_to_expend' => $current_co_write->section_to_expend ];
     }
     public function get_categories(){

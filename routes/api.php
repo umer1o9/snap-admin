@@ -46,6 +46,7 @@ Route::group(['prefix'=>'workflow','as'=>'workflow', 'middleware' => ['auth:sanc
 
     Route::post('compilation/', ['as' => '/', 'uses' => 'ApiController\WidgetController@compilation']);
 
+    Route::get('widget/result', ['as' => 'widget/result', 'uses' => 'ApiController\WidgetController@result']);
 Route::group(['prefix'=>'widget', 'middleware' => ['auth:sanctum'], 'as'=>'widget', 'namespace' => 'ApiController' ], function(){
     Route::get('/results', ['as' => '/results', 'uses' => 'WidgetController@results']);
 
